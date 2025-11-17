@@ -1,4 +1,4 @@
-import { FilePenLineIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloud, UploadCloudIcon, XIcon } from 'lucide-react'
+import { BrainCircuit, FilePenLineIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloud, UploadCloudIcon, XIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { dummyResumeData } from '../assets/assets'
 import {useNavigate} from 'react-router-dom'
@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [showCreateResume, setShowCreateResume] = useState(false)
   const [showUploadResume, setShowUploadResume] = useState(false)
   const [title, setTitle] = useState('')
+  const [jobDescription, setJobDescription] = useState('')
   const [resume, setResume] = useState(null)
   const [editResumeId, setEditResumeId] = useState('')
 
@@ -50,7 +51,7 @@ const Dashboard = () => {
     setIsLoading(true)
     try {
       const resumeText = await pdfToText(resume)
-      const { data } = await api.post('/api/ai/upload-resume', {title, resumeText}, {headers: { Authorization: token }})
+      const { data } = await api.post('/api/ai/upload-resume', {title, jobDescription, resumeText}, {headers: { Authorization: token }})
       setTitle('')
       setResume(null)
       setShowUploadResume(false)
@@ -105,8 +106,8 @@ const Dashboard = () => {
               <p className='text-sm group-hover:text-indigo-600 transition-all duration-300'>Create Resume</p>
             </button>
             <button onClick={()=> setShowUploadResume(true)} className='w-full bg-white sm:max-w-36 h-48 flex flex-col items-center justify-center rounded-lg gap-2 text-slate-600 border border-dashed border-slate-300 group hover:border-purple-500 hover:shadow-lg transition-all duration-300 cursor-pointer'>
-              <UploadCloudIcon className='size-11 transition-all duration-300 p-2.5 bg-gradient-to-br from-purple-300 to-purple-500  text-white rounded-full'/>
-              <p className='text-sm group-hover:text-purple-600 transition-all duration-300'>Upload Existing</p>
+              <BrainCircuit className='size-11 transition-all duration-300 p-2.5 bg-gradient-to-br from-purple-300 to-purple-500  text-white rounded-full'/>
+              <p className='text-sm group-hover:text-purple-600 transition-all duration-300'>Ai Resume</p>
             </button>
         </div>
 
@@ -150,6 +151,8 @@ const Dashboard = () => {
             <div onClick={e => e.stopPropagation()} className='relative bg-slate-50 border shadow-md rounded-lg w-full max-w-sm p-6'>
               <h2 className='text-xl font-bold mb-4'>Upload Resume</h2>
               <input onChange={(e)=>setTitle(e.target.value)} value={title} type="text" placeholder='Enter resume title' className='w-full px-4 py-2 mb-4 focus:border-green-600 ring-green-600' required/>
+                <h2 className='text-xl font-bold mb-4'>Job Description</h2>
+                <textarea onChange={(e)=>setJobDescription(e.target.value)} value={jobDescription} placeholder='Enter job description' className='w-full px-4 py-2 mb-4 focus:border-green-600 ring-green-600' required></textarea>
                 <div>
                   <label htmlFor="resume-input" className="block text-sm text-slate-700">
                     Select resume file

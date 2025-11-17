@@ -63,60 +63,79 @@ export const enhanceJobDescription = async (req, res) => {
 export const uploadResume = async (req, res) => {
     try {
        
-        const {resumeText, title} = req.body;
+        const {resumeText, title, jobDescription} = req.body;
         const userId = req.userId;
 
         if(!resumeText){
             return res.status(400).json({message: 'Missing required fields'})
         }
 
-        const systemPrompt = "You are an expert AI Agent to extract data from resume."
+         const systemPrompt = `
+            You are an expert AI Agent specialized in parsing resumes and optimizing them for ATS without adding any new or invented information.
 
-        const userPrompt = `extract data from this resume: ${resumeText}
-        
-        Provide data in the following JSON format with no additional text before or after:
+            Strict Rules:
+            - DO NOT add any new skills, tools, technologies, or data not present in the resume.
+            - DO NOT fabricate experience, projects, dates, education, or personal details.
+            - Extract ONLY relevant keywords from the job description.
+            - Sprinkle those keywords naturally into the resume content (summary, experience descriptions, projects) ONLY where they logically fit.
+            - Do NOT force keywords unnaturally.
+            - Personal info, dates, company names, and positions must NOT be changed.
+            `;
 
-        {
-        professional_summary: { type: String, default: '' },
-        skills: [{ type: String }],
-        personal_info: {
-            image: {type: String, default: '' },
-            full_name: {type: String, default: '' },
-            profession: {type: String, default: '' },
-            email: {type: String, default: '' },
-            phone: {type: String, default: '' },
-            location: {type: String, default: '' },
-            linkedin: {type: String, default: '' },
-            website: {type: String, default: '' },
-        },
-        experience: [
+            const userPrompt = `
+            extract data from this resume: ${resumeText}
+
+            Also extract relevant keywords from this job description: ${jobDescription}
+
+            Strict Instructions:
+            - Use only keywords that actually appear in the job description.
+            - Do NOT add new skills that are not already present in the resume.
+            - Embed job-description keywords naturally to improve ATS relevance.
+            - Do NOT modify or invent any data.
+            - Output must strictly follow the JSON format below.
+            - No text before or after the JSON.
+
             {
-                company: { type: String },
-                position: { type: String },
-                start_date: { type: String },
-                end_date: { type: String },
-                description: { type: String },
-                is_current: { type: Boolean },
+            professional_summary: { type: String, default: '' },
+            skills: [{ type: String }],
+            personal_info: {
+                image: {type: String, default: '' },
+                full_name: {type: String, default: '' },
+                profession: {type: String, default: '' },
+                email: {type: String, default: '' },
+                phone: {type: String, default: '' },
+                location: {type: String, default: '' },
+                linkedin: {type: String, default: '' },
+                website: {type: String, default: '' },
+            },
+            experience: [
+                {
+                    company: { type: String },
+                    position: { type: String },
+                    start_date: { type: String },
+                    end_date: { type: String },
+                    description: { type: String },
+                    is_current: { type: Boolean },
+                }
+            ],
+            project: [
+                {
+                    name: { type: String },
+                    type: { type: String },
+                    description: { type: String },
+                }
+            ],
+            education: [
+                {
+                    institution: { type: String },
+                    degree: { type: String },
+                    field: { type: String },
+                    graduation_date: { type: String },
+                    gpa: { type: String },
+                }
+            ]
             }
-        ],
-        project: [
-            {
-                name: { type: String },
-                type: { type: String },
-                description: { type: String },
-            }
-        ],
-        education: [
-            {
-                institution: { type: String },
-                degree: { type: String },
-                field: { type: String },
-                graduation_date: { type: String },
-                gpa: { type: String },
-            }
-        ],          
-        }
-        `;
+            `;
 
        const response = await ai.chat.completions.create({
             model: process.env.OPENAI_MODEL,
