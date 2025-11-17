@@ -1,14 +1,39 @@
 import { Mail, Phone, MapPin, Linkedin, Globe } from "lucide-react";
 
 const ModernTemplate = ({ data, accentColor }) => {
-	const formatDate = (dateStr) => {
-		if (!dateStr) return "";
-		const [year, month] = dateStr.split("-");
-		return new Date(year, month - 1).toLocaleDateString("en-US", {
-			year: "numeric",
-			month: "short"
-		});
-	};
+	 const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        if (dateStr.toLowerCase() === "present") return "Present";
+
+        const parts = dateStr.split(" ");
+
+        // Case 1: "Feb 2025"
+        if (parts.length === 2) {
+            const [monthStr, yearStr] = parts;
+
+            const month = new Date(`${monthStr} 1, 2000`).getMonth(); // convert month name → number
+            const year = parseInt(yearStr);
+
+            if (isNaN(month) || isNaN(year)) return "";
+
+            return new Date(year, month).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short"
+            });
+        }
+
+        // Case 2: "2023" (year only)
+        if (parts.length === 1) {
+            const year = parseInt(parts[0]);
+            if (isNaN(year)) return "";
+
+            return new Date(year, 0).toLocaleDateString("en-US", {
+                year: "numeric"
+            });
+        }
+
+        return "";
+    };
 
 	return (
 		<div className="max-w-4xl mx-auto bg-white text-gray-800">
@@ -80,7 +105,7 @@ const ModernTemplate = ({ data, accentColor }) => {
 											<p className="font-medium" style={{ color: accentColor }}>{exp.company}</p>
 										</div>
 										<div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded">
-											{formatDate(exp.start_date)} - {exp.is_current ? "Present" : formatDate(exp.end_date)}
+											{formatDate(exp.start_date)} - {formatDate(exp.end_date)}
 										</div>
 									</div>
 									{exp.description && (

@@ -1,12 +1,37 @@
 
 const MinimalTemplate = ({ data, accentColor }) => {
-    const formatDate = (dateStr) => {
+     const formatDate = (dateStr) => {
         if (!dateStr) return "";
-        const [year, month] = dateStr.split("-");
-        return new Date(year, month - 1).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short"
-        });
+        if (dateStr.toLowerCase() === "present") return "Present";
+
+        const parts = dateStr.split(" ");
+
+        // Case 1: "Feb 2025"
+        if (parts.length === 2) {
+            const [monthStr, yearStr] = parts;
+
+            const month = new Date(`${monthStr} 1, 2000`).getMonth(); // convert month name → number
+            const year = parseInt(yearStr);
+
+            if (isNaN(month) || isNaN(year)) return "";
+
+            return new Date(year, month).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short"
+            });
+        }
+
+        // Case 2: "2023" (year only)
+        if (parts.length === 1) {
+            const year = parseInt(parts[0]);
+            if (isNaN(year)) return "";
+
+            return new Date(year, 0).toLocaleDateString("en-US", {
+                year: "numeric"
+            });
+        }
+
+        return "";
     };
 
     return (
@@ -52,7 +77,7 @@ const MinimalTemplate = ({ data, accentColor }) => {
                                 <div className="flex justify-between items-baseline mb-1">
                                     <h3 className="text-lg font-medium">{exp.position}</h3>
                                     <span className="text-sm text-gray-500">
-                                        {formatDate(exp.start_date)} - {exp.is_current ? "Present" : formatDate(exp.end_date)}
+                                        {formatDate(exp.start_date)} - {formatDate(exp.end_date)}
                                     </span>
                                 </div>
                                 <p className="text-gray-600 mb-2">{exp.company}</p>

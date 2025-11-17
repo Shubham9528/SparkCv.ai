@@ -3,12 +3,39 @@ import { Mail, Phone, MapPin, Linkedin, Globe } from "lucide-react";
 const ClassicTemplate = ({ data, accentColor }) => {
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
-        const [year, month] = dateStr.split("-");
-        return new Date(year, month - 1).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short"
-        });
+        if (dateStr.toLowerCase() === "present") return "Present";
+
+        const parts = dateStr.split(" ");
+
+        // Case 1: "Feb 2025"
+        if (parts.length === 2) {
+            const [monthStr, yearStr] = parts;
+
+            const month = new Date(`${monthStr} 1, 2000`).getMonth(); // convert month name → number
+            const year = parseInt(yearStr);
+
+            if (isNaN(month) || isNaN(year)) return "";
+
+            return new Date(year, month).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short"
+            });
+        }
+
+        // Case 2: "2023" (year only)
+        if (parts.length === 1) {
+            const year = parseInt(parts[0]);
+            if (isNaN(year)) return "";
+
+            return new Date(year, 0).toLocaleDateString("en-US", {
+                year: "numeric"
+            });
+        }
+
+        return "";
     };
+
+
 
     return (
         <div className="max-w-4xl mx-auto p-8 bg-white text-gray-800 leading-relaxed">
@@ -78,7 +105,7 @@ const ClassicTemplate = ({ data, accentColor }) => {
                                         <p className="text-gray-700 font-medium">{exp.company}</p>
                                     </div>
                                     <div className="text-right text-sm text-gray-600">
-                                        <p>{formatDate(exp.start_date)} - {exp.is_current ? "Present" : formatDate(exp.end_date)}</p>
+                                        <p>{formatDate(exp.start_date)} - {formatDate(exp.end_date)}</p>
                                     </div>
                                 </div>
                                 {exp.description && (

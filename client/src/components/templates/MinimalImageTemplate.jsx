@@ -1,13 +1,38 @@
 import { Mail, Phone, MapPin } from "lucide-react";
 
 const MinimalImageTemplate = ({ data, accentColor }) => {
-    const formatDate = (dateStr) => {
+     const formatDate = (dateStr) => {
         if (!dateStr) return "";
-        const [year, month] = dateStr.split("-");
-        return new Date(year, month - 1).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-        });
+        if (dateStr.toLowerCase() === "present") return "Present";
+
+        const parts = dateStr.split(" ");
+
+        // Case 1: "Feb 2025"
+        if (parts.length === 2) {
+            const [monthStr, yearStr] = parts;
+
+            const month = new Date(`${monthStr} 1, 2000`).getMonth(); // convert month name → number
+            const year = parseInt(yearStr);
+
+            if (isNaN(month) || isNaN(year)) return "";
+
+            return new Date(year, month).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short"
+            });
+        }
+
+        // Case 2: "2023" (year only)
+        if (parts.length === 1) {
+            const year = parseInt(parts[0]);
+            if (isNaN(year)) return "";
+
+            return new Date(year, 0).toLocaleDateString("en-US", {
+                year: "numeric"
+            });
+        }
+
+        return "";
     };
 
     return (
@@ -135,7 +160,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                                             </h3>
                                             <span className="text-xs text-zinc-500">
                                                 {formatDate(exp.start_date)} -{" "}
-                                                {exp.is_current ? "Present" : formatDate(exp.end_date)}
+                                                {formatDate(exp.end_date)}
                                             </span>
                                         </div>
                                         <p className="text-sm mb-2" style={{ color: accentColor }} >
