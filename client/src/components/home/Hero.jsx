@@ -90,7 +90,7 @@ const Hero = () => {
 
             {/* Headline + CTA */}
             <h1 className="text-5xl md:text-6xl font-semibold max-w-5xl text-center mt-4 md:leading-[70px]">
-                Stop guessing. Start winning with<span className=" bg-gradient-to-r from-indigo-700 to-indigo-600 bg-clip-text text-transparent text-nowrap">AI-perfected</span> resumes.
+                Stop guessing. Start winning with <span className=" bg-gradient-to-r from-indigo-700 to-indigo-600 bg-clip-text text-transparent text-nowrap">AI-perfected</span> resumes.
             </h1>
 
             <p className="max-w-md text-center text-base my-7">Create, edit and download professional resumes with AI-powered assistance.</p>
