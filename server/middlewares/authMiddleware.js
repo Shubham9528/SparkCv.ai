@@ -11,7 +11,6 @@ const protect = async (req, res, next) => {
         req.userId = decoded.userId;
         next();
     }
-
     catch (error) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
