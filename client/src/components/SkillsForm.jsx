@@ -11,6 +11,9 @@ const SkillsForm = ({ data, onChange }) => {
         }
      }
 
+
+     
+
       const removeSkill = (indexToRemove)=>{
         onChange(data.filter((_, index)=> index !== indexToRemove))
       }
